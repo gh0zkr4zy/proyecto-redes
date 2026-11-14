@@ -23,5 +23,5 @@
         "r3": ["172.16.1.0/27", "172.16.1.32/28", "172.16.1.48/29"]
     },
     "ospf_routers": ["r1", "r2", "r3"],
-    "prefijo_clab": "clab-proyecto-"
+    "prefijo_clab": "clab-proyecto-grupo1-"
 }
