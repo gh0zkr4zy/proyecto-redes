@@ -14,7 +14,7 @@ sleep 5
 
 echo "[*] Ejecutando scripts de configuración..."
 sudo ./config-ip.sh
-sudo ./config-vlans.sh 2>/dev/null
+sudo ./rutas_estaticas.sh
 sudo ./config-ospf.sh
 sudo ./config-nat.sh
 
