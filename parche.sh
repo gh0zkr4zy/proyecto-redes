@@ -6,7 +6,7 @@ sleep 1
 
 echo "[*] 2. Re-aplicando configuración de IPs y VLANs..."
 sudo ./config-ip.sh 2>/dev/null
-sudo ./rutas_estaticas.sh
+sudo ./rutas-estaticas.sh
 
 echo "[*] 3. Instalando iptables en R1 y aplicando NAT..."
 docker exec clab-proyecto-grupo1-r1 apk update
