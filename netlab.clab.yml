@@ -40,11 +40,11 @@ topology:
     - endpoints: ["r1:eth4", "externo:eth1"]
 
     # Segmento Servidores en r1 vía sw-b
-    - endpoints: ["r1:eth3", "sw-b:eth1"]
-    - endpoints: ["sw-b:eth2", "srv-web:eth1"]
-    - endpoints: ["sw-b:eth3", "srv-datos:eth1"]
+    - endpoints: ["r1:eth3", "sw-b:r1-srv"]
+    - endpoints: ["sw-b:web-srv", "srv-web:eth1"]
+    - endpoints: ["sw-b:dat-srv", "srv-datos:eth1"]
 
     # Segmento Clientes (VLAN 10 y 20) en r2 vía sw-a
-    - endpoints: ["r2:eth3", "sw-a:eth1"]
-    - endpoints: ["sw-a:eth2", "pc-admin:eth1"]
-    - endpoints: ["sw-a:eth3", "pc-ventas:eth1"]
+    - endpoints: ["r2:eth3", "sw-a:r2-cli"]
+    - endpoints: ["sw-a:adm-cli", "pc-admin:eth1"]
+    - endpoints: ["sw-a:ven-cli", "pc-ventas:eth1"]
