@@ -2,11 +2,11 @@
 
 echo "Configurando OSPF area 0..."
 
-# Prender el demonio OSPF en los routers
+# Prender el demonio OSPF en los routers SIN reiniciar el contenedor
 for router in r1 r2 r3; do
     docker exec clab-proyecto-grupo1-$router sed -i 's/ospfd=no/ospfd=yes/g' /etc/frr/daemons
-    docker exec clab-proyecto-grupo1-$router /etc/init.d/frr restart
-    sleep 2 # Dar tiempo a que el demonio levante
+    docker exec clab-proyecto-grupo1-$router /etc/init.d/frr reload || docker exec -d clab-proyecto-grupo1-$router /usr/lib/frr/ospfd -d
+    sleep 2 
 done
 
 # R2 y R3 anuncian las redes internas normales
