@@ -10,7 +10,7 @@ def cargar_config(ruta_json):
     with open(ruta_json, 'r') as f:
         return json.load(f)
 
-def run_docker_cmd(nodo, comando, prefijo="clab-proyecto-"):
+def run_docker_cmd(nodo, comando, prefijo="clab-proyecto-grupo1-"):
     """Ejecuta comandos en los nodos y evita que el script explote si fallan."""
     cmd_completo = f"docker exec {prefijo}{nodo} {comando}"
     try:
