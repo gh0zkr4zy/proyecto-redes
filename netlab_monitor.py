@@ -42,14 +42,14 @@ def check_ospf(config):
     return len(fallas) == 0, fallas
 
 def check_vlans(config):
-    """Verificación 2: Interfaces VLANs en r2."""
+    """Verificación 2: Interfaces de Clientes en r2."""
     fallas = []
-    print("[*] Revisando VLANs...")
-    out, rc = run_docker_cmd("r2", "ip -d link")
-    if "vlan id 10" not in out:
-        fallas.append("Falta subinterfaz VLAN 10 en r2 (Capa Enlace/VLAN)")
-    if "vlan id 20" not in out:
-        fallas.append("Falta subinterfaz VLAN 20 en r2 (Capa Enlace/VLAN)")
+    print("[*] Revisando Interfaces de Clientes en r2...")
+    out, rc = run_docker_cmd("r2", "ip a")
+    if "172.16.1.1/27" not in out: # Verifica IP de VLAN 10
+        fallas.append("Falta interfaz (Gateway VLAN 10) en r2 (Capa Enlace/VLAN)")
+    if "172.16.1.33/28" not in out: # Verifica IP de VLAN 20
+        fallas.append("Falta interfaz (Gateway VLAN 20) en r2 (Capa Enlace/VLAN)")
     return len(fallas) == 0, fallas
 
 def check_rutas(config):

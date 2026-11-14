@@ -44,7 +44,6 @@ topology:
     - endpoints: ["sw-b:web-srv", "srv-web:eth1"]
     - endpoints: ["sw-b:dat-srv", "srv-datos:eth1"]
 
-    # Segmento Clientes (VLAN 10 y 20) en r2 vía sw-a
-    - endpoints: ["r2:eth3", "sw-a:r2-cli"]
-    - endpoints: ["sw-a:adm-cli", "pc-admin:eth1"]
-    - endpoints: ["sw-a:ven-cli", "pc-ventas:eth1"]
+    # Segmento Clientes conectados directamente a r2 (simulando VLANs en puertos distintos)
+    - endpoints: ["r2:eth3", "pc-admin:eth1"] # Simula VLAN 10
+    - endpoints: ["r2:eth4", "pc-ventas:eth1"] # Simula VLAN 20
