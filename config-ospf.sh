@@ -1,6 +1,13 @@
 #!/bin/bash
 
-echo "Configurando OSPF area 0."
+echo "Configurando OSPF area 0..."
+
+# Prender el demonio OSPF en los routers
+for router in r1 r2 r3; do
+    docker exec clab-proyecto-grupo1-$router sed -i 's/ospfd=no/ospfd=yes/g' /etc/frr/daemons
+    docker exec clab-proyecto-grupo1-$router /etc/init.d/frr restart
+    sleep 2 # Dar tiempo a que el demonio levante
+done
 
 # R2 y R3 anuncian las redes internas normales
 for router in r2 r3; do
@@ -9,7 +16,7 @@ configure terminal
 router ospf
     network 172.16.1.0/24 area 0
 exit
-write
+do write
 EOF
 done
 
@@ -20,7 +27,7 @@ router ospf
     network 172.16.1.0/24 area 0
     default-information originate always
 exit
-write
+do write
 EOF
 
 echo "OSPF configurado correctamente en r1, r2 y r3."
