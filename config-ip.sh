@@ -27,17 +27,13 @@ docker exec $PREFIX-r2 ip link set up dev eth2
 # Levantar la física primero
 docker exec $PREFIX-r2 ip link set up dev eth3
 
-# Instalar soporte VLAN e inyectar el módulo por si acaso
-docker exec $PREFIX-r2 apk add --no-cache vlan
-docker exec $PREFIX-r2 modprobe 8021q 2>/dev/null
-
 # Subinterfaces VLAN 10 y 20 en r2
 docker exec $PREFIX-r2 ip link add link eth3 name eth3.10 type vlan id 10
 docker exec $PREFIX-r2 ip link add link eth3 name eth3.20 type vlan id 20
-docker exec $PREFIX-r2 ip link set eth3.10 up
-docker exec $PREFIX-r2 ip link set eth3.20 up
 docker exec $PREFIX-r2 ip addr add 172.16.1.1/27 dev eth3.10
 docker exec $PREFIX-r2 ip addr add 172.16.1.33/28 dev eth3.20
+docker exec $PREFIX-r2 ip link set eth3.10 up
+docker exec $PREFIX-r2 ip link set eth3.20 up
 
 # --- R3 ---
 docker exec $PREFIX-r3 ip addr add 172.16.1.62/30 dev eth1
@@ -55,14 +51,14 @@ docker exec $PREFIX-srv-datos ip link set up dev eth1
 # pc-admin (VLAN 10)
 docker exec $PREFIX-pc-admin ip link set up dev eth1
 docker exec $PREFIX-pc-admin ip link add link eth1 name eth1.10 type vlan id 10
-docker exec $PREFIX-pc-admin ip link set eth1.10 up
 docker exec $PREFIX-pc-admin ip addr add 172.16.1.2/27 dev eth1.10
+docker exec $PREFIX-pc-admin ip link set eth1.10 up
 
 # pc-ventas (VLAN 20)
 docker exec $PREFIX-pc-ventas ip link set up dev eth1
 docker exec $PREFIX-pc-ventas ip link add link eth1 name eth1.20 type vlan id 20
-docker exec $PREFIX-pc-ventas ip link set eth1.20 up
 docker exec $PREFIX-pc-ventas ip addr add 172.16.1.34/28 dev eth1.20
+docker exec $PREFIX-pc-ventas ip link set eth1.20 up
 
 # --- Red Externa ---
 docker exec $PREFIX-externo ip addr add 203.0.113.2/29 dev eth1
