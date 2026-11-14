@@ -1,0 +1,27 @@
+{
+    "nodos": {
+        "r1": "172.16.1.57",
+        "r2": "172.16.1.58",
+        "r3": "172.16.1.61",
+        "sw-a": "bridge",
+        "sw-b": "bridge",
+        "pc-admin": "172.16.1.2",
+        "pc-ventas": "172.16.1.34",
+        "srv-web": "172.16.1.50",
+        "srv-datos": "172.16.1.51",
+        "externo": "203.0.113.2"
+    },
+    "vlans": [
+        {"id": 10, "red": "172.16.1.0/27", "gateway": "172.16.1.1"},
+        {"id": 20, "red": "172.16.1.32/28", "gateway": "172.16.1.33"}
+    ],
+    "servicios": {
+        "srv-web": {"ip": "172.16.1.50", "puerto": 80, "protocolo": "tcp"},
+        "srv-datos": {"ip": "172.16.1.51", "puerto": 9000, "protocolo": "tcp"}
+    },
+    "rutas_esperadas": {
+        "r3": ["172.16.1.0/27", "172.16.1.32/28", "172.16.1.48/29"]
+    },
+    "ospf_routers": ["r1", "r2", "r3"],
+    "prefijo_clab": "clab-proyecto-"
+}
