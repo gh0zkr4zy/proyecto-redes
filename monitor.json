@@ -1,4 +1,5 @@
 {
+    "prefijo_clab": "clab-proyecto-grupo1-",
     "nodos": {
         "r1": "172.16.1.57",
         "r2": "172.16.1.58",
@@ -12,16 +13,59 @@
         "externo": "203.0.113.2"
     },
     "vlans": [
-        {"id": 10, "red": "172.16.1.0/27", "gateway": "172.16.1.1"},
-        {"id": 20, "red": "172.16.1.32/28", "gateway": "172.16.1.33"}
+        {
+            "id": 10,
+            "nombre": "Administracion",
+            "red": "172.16.1.0/27",
+            "gateway": "172.16.1.1",
+            "cliente": "pc-admin"
+        },
+        {
+            "id": 20,
+            "nombre": "Ventas",
+            "red": "172.16.1.32/28",
+            "gateway": "172.16.1.33",
+            "cliente": "pc-ventas"
+        }
     ],
     "servicios": {
-        "srv-web": {"ip": "172.16.1.50", "puerto": 80, "protocolo": "tcp"},
-        "srv-datos": {"ip": "172.16.1.51", "puerto": 9000, "protocolo": "tcp"}
+        "srv-web": {
+            "ip": "172.16.1.50",
+            "puerto": 80,
+            "protocolo": "tcp"
+        },
+        "srv-datos": {
+            "ip": "172.16.1.51",
+            "puerto": 9000,
+            "protocolo": "tcp"
+        }
     },
     "rutas_esperadas": {
-        "r3": ["172.16.1.0/27", "172.16.1.32/28", "172.16.1.48/29"]
+        "r1": [
+            "172.16.1.0/27",
+            "172.16.1.32/28",
+            "172.16.1.48/29",
+            "203.0.113.0/29"
+        ],
+        "r2": [
+            "172.16.1.0/27",
+            "172.16.1.32/28",
+            "172.16.1.48/29",
+            "default"
+        ],
+        "r3": [
+            "172.16.1.0/27",
+            "172.16.1.32/28",
+            "172.16.1.48/29",
+            "default"
+        ]
     },
     "ospf_routers": ["r1", "r2", "r3"],
-    "prefijo_clab": "clab-proyecto-grupo1-"
+    "vecinos_ospf_esperados": 2,
+    "nat": {
+        "router": "r1",
+        "interfaz_salida": "eth4",
+        "ip_publica_r1": "203.0.113.1",
+        "ip_externo": "203.0.113.2"
+    }
 }

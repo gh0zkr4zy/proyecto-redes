@@ -31,19 +31,20 @@ topology:
       image: ghcr.io/hellt/network-multitool
 
   links:
-    # Enlaces punto a punto entre routers (/30)
+    # Enlaces punto a punto entre routers (/30) - OSPF Area 0
     - endpoints: ["r1:eth1", "r2:eth1"]
-    - endpoints: ["r2:eth2", "r3:eth2"]
     - endpoints: ["r1:eth2", "r3:eth1"]
+    - endpoints: ["r2:eth2", "r3:eth2"]
 
-    # Red externa conectada a r1
+    # Red externa conectada a r1 (203.0.113.0/29)
     - endpoints: ["r1:eth4", "externo:eth1"]
 
-    # Segmento Servidores en r1 vía sw-b
+    # Segmento Servidores en r1 via sw-b (172.16.1.48/29)
     - endpoints: ["r1:eth3", "sw-b:r1-srv"]
     - endpoints: ["sw-b:web-srv", "srv-web:eth1"]
     - endpoints: ["sw-b:dat-srv", "srv-datos:eth1"]
 
-    # Segmento Clientes conectados directamente a r2 (simulando VLANs en puertos distintos)
-    - endpoints: ["r2:eth3", "pc-admin:eth1"] # Simula VLAN 10
-    - endpoints: ["r2:eth4", "pc-ventas:eth1"] # Simula VLAN 20
+    # Segmento Clientes (VLAN 10 y VLAN 20) en r2 via sw-a (Router-on-a-Stick)
+    - endpoints: ["r2:eth3", "sw-a:r2-cli"]
+    - endpoints: ["sw-a:adm-cli", "pc-admin:eth1"]
+    - endpoints: ["sw-a:ven-cli", "pc-ventas:eth1"]
