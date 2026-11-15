@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "[*] Destruyendo restos anteriores por si acaso..."
+echo "[*] Destruyendo restos anteriores..."
 sudo ip link delete sw-a type bridge 2>/dev/null
 sudo ip link delete sw-b type bridge 2>/dev/null
 
@@ -13,12 +13,16 @@ sudo ip link set dev sw-b up
 echo "[*] Desplegando topología en Containerlab..."
 sudo containerlab deploy -t netlab.clab.yml --reconfigure
 
-echo "[*] Esperando 5 segundos para que los contenedores inicien bien..."
+echo "[*] Esperando 5 segundos para inicio de contenedores..."
 sleep 5
 
-echo "[*] Ejecutando scripts de configuración secuencial..."
+echo "[*] Ejecutando configuración de IPs..."
 sudo ./config-ip.sh
+
+echo "[*] Configurando OSPF (esto levanta los demonios y adyacencias)..."
 sudo ./config-ospf.sh
+
+echo "[*] Aplicando NAT en R1..."
 sudo ./config-nat.sh
 
 echo "[*] Levantando servicios en servidores (Nginx y Netcat)..."
@@ -33,7 +37,7 @@ docker exec $PREFIX-pc-admin ip route replace default via 172.16.1.1
 docker exec $PREFIX-pc-ventas ip route replace default via 172.16.1.33
 docker exec $PREFIX-externo ip route replace default via 203.0.113.1
 
-echo "[*] Esperando 8 segundos para convergencia total de OSPF..."
-sleep 8
+echo "[*] Esperando 10 segundos para convergencia total de vecinos OSPF..."
+sleep 10
 
-echo "[+] ¡Despliegue atómico completado! La red debería estar operativa."
+echo "[+] ¡Despliegue atómico completado!"

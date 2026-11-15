@@ -4,7 +4,8 @@ echo "Configurando OSPF area 0..."
 
 for router in r1 r2 r3; do
     docker exec clab-proyecto-grupo1-$router sed -i 's/ospfd=no/ospfd=yes/g' /etc/frr/daemons
-    docker exec clab-proyecto-grupo1-$router /etc/init.d/frr reload || docker exec -d clab-proyecto-grupo1-$router /usr/lib/frr/ospfd -d
+    # Reiniciar el servicio FRR completo para que cargue la config limpia
+    docker exec clab-proyecto-grupo1-$router /etc/init.d/frr restart
     sleep 2
 done
 
@@ -30,4 +31,5 @@ router ospf
 exit
 do write
 EOF
-echo "OSPF configurado correctamente."
+
+echo "OSPF configurado correctamente en r1, r2 y r3."
