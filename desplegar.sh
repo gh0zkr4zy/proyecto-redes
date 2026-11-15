@@ -34,6 +34,9 @@ sudo iptables -I FORWARD -o sw-b -j ACCEPT 2>/dev/null || true
 echo "[*] 3. Desplegando topologia en Containerlab..."
 sudo containerlab deploy -t netlab.clab.yml --reconfigure
 
+echo "[*] Esperando 5 segundos para inicializacion de demonios FRR y enlaces..."
+sleep 5
+
 # Asegurar que todos los puertos de sw-a y sw-b en el host esten UP
 for port in r2-cli adm-cli ven-cli r1-srv web-srv dat-srv; do
     sudo ip link set dev "$port" up 2>/dev/null || true
@@ -57,7 +60,8 @@ sudo ./config-nat.sh
 echo "[*] 9. Levantando servicios en servidores (HTTP en srv-web y TCP/9000 en srv-datos)..."
 docker exec "$PREFIX-srv-web" sh -c "pgrep nginx >/dev/null || nginx"
 docker exec "$PREFIX-externo" sh -c "pgrep nginx >/dev/null || nginx" 2>/dev/null || true
-docker exec -d "$PREFIX-srv-datos" sh -c "pkill -f 'nc.*9000' 2>/dev/null; while true; do nc -lk -p 9000 -e /bin/cat 2>/dev/null || nc -l -p 9000 -e /bin/cat 2>/dev/null || nc -lk 9000 2>/dev/null || nc -l -p 9000 </dev/null; done"
+docker exec "$PREFIX-srv-datos" killall nc 2>/dev/null || true
+docker exec -d "$PREFIX-srv-datos" sh -c "while true; do nc -l -p 9000; done"
 
 echo "[*] 10. Esperando convergencia de OSPF y validando trafico inicial..."
 sleep 6

@@ -57,7 +57,7 @@ def check_inventario(config):
                 detalles_ok.append(f"Bridge {nodo} activo en host")
             continue
 
-        out, rc = run_docker_cmd(nodo, "ip -br a", prefijo)
+        out, rc = run_docker_cmd(nodo, "sh -c 'ip -br a 2>/dev/null || ip a'", prefijo)
         if rc != 0:
             fallas.append(f"Contenedor {nodo} no responde a docker exec (Capa: Enlace/VLAN)")
         elif ip_esperada not in out:
@@ -79,14 +79,18 @@ def check_vlans(config):
     for nodo, ip_esperada in config.get("nodos", {}).items():
         if ip_esperada == "bridge":
             continue
-        out_br, rc_br = run_docker_cmd(nodo, "ip -br a", prefijo)
-        out_link, rc_link = run_docker_cmd(nodo, "ip -d link", prefijo)
+        out_br, rc_br = run_docker_cmd(nodo, "sh -c 'ip -br a 2>/dev/null || ip a'", prefijo)
+        out_link, rc_link = run_docker_cmd(nodo, "sh -c 'ip -d link 2>/dev/null || ip link'", prefijo)
         if rc_br != 0 or rc_link != 0:
             fallas.append(f"No se pudo leer 'ip -br a' o 'ip -d link' en {nodo} (Capa: Enlace/VLAN)")
 
     # 2. Verificar subinterfaces 802.1Q en r2 y en los clientes segun config["vlans"]
-    out_r2_br, _ = run_docker_cmd("r2", "ip -br a", prefijo)
-    out_r2_link, _ = run_docker_cmd("r2", "ip -d link", prefijo)
+    out_r2_br, _ = run_docker_cmd("r2", "sh -c 'ip -br a 2>/dev/null || ip a'", prefijo)
+    out_r2_link, _ = run_docker_cmd(
+        "r2",
+        "sh -c 'ip -d link 2>/dev/null; ip link; cat /proc/net/vlan/config 2>/dev/null'",
+        prefijo
+    )
 
     for vlan in config.get("vlans", []):
         vlan_id = vlan["id"]
@@ -94,7 +98,13 @@ def check_vlans(config):
         mascara = red.split("/")[1]
         gw_cidr = f"{vlan['gateway']}/{mascara}"
 
-        if f"vlan protocol 802.1Q id {vlan_id}" not in out_r2_link and f"id {vlan_id}" not in out_r2_link:
+        tiene_subif_r2 = (
+            f"vlan protocol 802.1Q id {vlan_id}" in out_r2_link
+            or f"id {vlan_id}" in out_r2_link
+            or f".{vlan_id}@" in out_r2_link
+            or f"| {vlan_id} " in out_r2_link
+        )
+        if not tiene_subif_r2:
             fallas.append(f"Falta subinterfaz 802.1Q para VLAN {vlan_id} en r2 (Capa: Enlace/VLAN)")
         elif gw_cidr not in out_r2_br and vlan["gateway"] not in out_r2_br:
             fallas.append(f"Falta IP de Gateway {gw_cidr} para VLAN {vlan_id} en r2 (Capa: IP/Gateway)")
@@ -115,12 +125,21 @@ def check_vlans(config):
                         break
 
         if cliente and cliente in config.get("nodos", {}):
-            out_cli_link, rc_cli = run_docker_cmd(cliente, "ip -d link", prefijo)
-            out_cli_br, _ = run_docker_cmd(cliente, "ip -br a", prefijo)
+            out_cli_link, rc_cli = run_docker_cmd(
+                cliente,
+                "sh -c 'ip -d link 2>/dev/null; ip link; cat /proc/net/vlan/config 2>/dev/null'",
+                prefijo
+            )
+            out_cli_br, _ = run_docker_cmd(cliente, "sh -c 'ip -br a 2>/dev/null || ip a'", prefijo)
             ip_cli = config["nodos"][cliente]
+            tiene_vlan_cli = (
+                f"id {vlan_id}" in out_cli_link
+                or f".{vlan_id}@" in out_cli_link
+                or f"| {vlan_id} " in out_cli_link
+            )
             if rc_cli != 0:
                 fallas.append(f"No se pudo verificar interfaz VLAN en {cliente} (Capa: Enlace/VLAN)")
-            elif f"id {vlan_id}" not in out_cli_link:
+            elif not tiene_vlan_cli:
                 fallas.append(f"VLAN ID incorrecto o ausente en {cliente}: se esperaba VLAN {vlan_id} (Capa: Enlace/VLAN)")
             elif ip_cli not in out_cli_br:
                 fallas.append(f"Cliente {cliente} no tiene asignada la IP {ip_cli} en su interfaz VLAN {vlan_id} (Capa: IP/Gateway)")
@@ -226,7 +245,7 @@ def check_servicios(config):
             continue
 
         # 2. Verificar que el servidor tenga su IP del plan VLSM activa
-        out_ip, rc_ip = run_docker_cmd(srv, "ip -br a", prefijo)
+        out_ip, rc_ip = run_docker_cmd(srv, "sh -c 'ip -br a 2>/dev/null || ip a'", prefijo)
         if rc_ip != 0 or ip not in out_ip:
             fallas.append(f"Servidor {srv} no tiene la IP {ip} configurada (Capa: IP/Gateway)")
             continue

@@ -5,7 +5,9 @@ PREFIX="clab-proyecto-grupo1"
 
 for router in r1 r2 r3; do
     docker exec "$PREFIX-$router" sed -i 's/ospfd=no/ospfd=yes/g' /etc/frr/daemons
-    docker exec "$PREFIX-$router" /etc/init.d/frr restart >/dev/null 2>&1 || true
+    docker exec "$PREFIX-$router" touch /etc/frr/vtysh.conf
+    # Iniciar ospfd directamente sin detener watchfrr (evita que el contenedor FRR se reinicie y borre las IPs/VLANs)
+    docker exec "$PREFIX-$router" sh -c "pgrep ospfd >/dev/null || /usr/lib/frr/ospfd -d"
 done
 
 sleep 2
