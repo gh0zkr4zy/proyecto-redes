@@ -6,6 +6,7 @@ PREFIX="clab-proyecto-grupo1"
 # Normalizar saltos de linea por si se edito en Windows
 sed -i 's/\r$//' *.sh *.py *.yml *.json 2>/dev/null || true
 chmod +x *.sh 2>/dev/null || true
+sudo rm -f reporte_monitor.txt reporte_monitor.json 2>/dev/null || true
 
 echo "[*] 1. Limpiando restos anteriores de laboratorio y bridges..."
 sudo containerlab destroy -t netlab.clab.yml --cleanup 2>/dev/null || true

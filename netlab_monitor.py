@@ -389,11 +389,16 @@ def generar_reporte(resultados, ruta_txt="reporte_monitor.txt", ruta_json=None):
             lineas.append(f"{pref}{d}")
 
     contenido_reporte = "\n".join(lineas) + "\n"
-
-    with open(ruta_txt, "w", encoding="utf-8") as f:
-        f.write(contenido_reporte)
-
     print("\n" + contenido_reporte)
+
+    try:
+        with open(ruta_txt, "w", encoding="utf-8") as f:
+            f.write(contenido_reporte)
+    except PermissionError:
+        run_host_cmd(f"sudo rm -f {ruta_txt}")
+        with open(ruta_txt, "w", encoding="utf-8") as f:
+            f.write(contenido_reporte)
+
     print(f"[*] Reporte guardado en: {os.path.abspath(ruta_txt)}")
 
     if ruta_json:
@@ -410,8 +415,13 @@ def generar_reporte(resultados, ruta_txt="reporte_monitor.txt", ruta_json=None):
                 for prueba, (estado, detalles) in resultados.items()
             }
         }
-        with open(ruta_json, "w", encoding="utf-8") as fj:
-            json.dump(reporte_dict, fj, indent=4, ensure_ascii=False)
+        try:
+            with open(ruta_json, "w", encoding="utf-8") as fj:
+                json.dump(reporte_dict, fj, indent=4, ensure_ascii=False)
+        except PermissionError:
+            run_host_cmd(f"sudo rm -f {ruta_json}")
+            with open(ruta_json, "w", encoding="utf-8") as fj:
+                json.dump(reporte_dict, fj, indent=4, ensure_ascii=False)
         print(f"[*] Reporte JSON guardado en: {os.path.abspath(ruta_json)}")
 
     if not todo_ok:
