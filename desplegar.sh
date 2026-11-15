@@ -1,9 +1,10 @@
 #!/bin/bash
-set -e
 
-echo "[*] Destruyendo restos anteriores..."
-sudo ip link delete sw-a type bridge 2>/dev/null
-sudo ip link delete sw-b type bridge 2>/dev/null
+echo "[*] Limpiando restos anteriores de bridges..."
+sudo ip link set dev sw-a down 2>/dev/null || true
+sudo ip link set dev sw-b down 2>/dev/null || true
+sudo ip link delete sw-a type bridge 2>/dev/null || true
+sudo ip link delete sw-b type bridge 2>/dev/null || true
 
 echo "[*] Creando Bridges de Linux (sw-a y sw-b)..."
 sudo ip link add name sw-a type bridge
