@@ -65,10 +65,8 @@ docker exec "$PREFIX-externo" sh -c "pgrep nginx >/dev/null || nginx" 2>/dev/nul
 docker exec "$PREFIX-srv-datos" killall nc 2>/dev/null || true
 docker exec -d "$PREFIX-srv-datos" sh -c "while true; do nc -l -p 9000; done"
 
-echo "[*] 10. Esperando convergencia de OSPF y validando trafico inicial..."
-sleep 6
-
-# Generar trafico inicial para poblar ARP y contadores NAT
+echo "[*] 10. Validando trafico inicial entre segmentos y NAT..."
+sleep 2
 docker exec "$PREFIX-pc-admin" ping -c 1 -W 2 172.16.1.50 >/dev/null 2>&1 || true
 docker exec "$PREFIX-pc-admin" ping -c 1 -W 2 203.0.113.2 >/dev/null 2>&1 || true
 docker exec "$PREFIX-pc-ventas" ping -c 1 -W 2 203.0.113.2 >/dev/null 2>&1 || true
