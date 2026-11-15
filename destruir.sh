@@ -2,6 +2,8 @@
 
 echo "[*] Destruyendo topologia de Containerlab..."
 sudo containerlab destroy -t netlab.clab.yml --cleanup 2>/dev/null || true
+docker rm -f clab-proyecto-grupo1-pc-invitados 2>/dev/null || true
+sudo ip link delete inv-cli 2>/dev/null || true
 
 echo "[*] Limpiando rutas de monitoreo en el host..."
 sudo ip route del 172.16.1.50/32 2>/dev/null || true

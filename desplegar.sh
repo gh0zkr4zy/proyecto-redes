@@ -9,6 +9,8 @@ chmod +x *.sh 2>/dev/null || true
 
 echo "[*] 1. Limpiando restos anteriores de laboratorio y bridges..."
 sudo containerlab destroy -t netlab.clab.yml --cleanup 2>/dev/null || true
+docker rm -f clab-proyecto-grupo1-pc-invitados 2>/dev/null || true
+sudo ip link delete inv-cli 2>/dev/null || true
 sudo ip link set dev sw-a down 2>/dev/null || true
 sudo ip link set dev sw-b down 2>/dev/null || true
 sudo ip link delete sw-a type bridge 2>/dev/null || true
